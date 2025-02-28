@@ -9,6 +9,7 @@ public class CellEntry  implements Index2D {
         else {_data = Ex2Utils.ABC[x]+y;}
         init();
     }
+
     public String toString() {return _data;}
     public CellEntry(String c) {
         _data = c;

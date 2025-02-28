@@ -192,37 +192,70 @@ public class Ex2Sheet implements Sheet {
         }
         return ans;
     }
+
+    public Cell[][] Range2D (String RangeCell){
+        // A1:C5
+
+        if (RangeCell == null || !RangeCell.contains(":")){
+            return null;
+        }
+        String[] arr = RangeCell.split(":");
+        String first = arr[0];
+        String second = arr[1];
+        CellEntry firstCell = new CellEntry(first);
+        CellEntry secondCell = new CellEntry(second);
+        Cell[][] Rangeval = new SCell[secondCell.getY()-firstCell.getY()+1][secondCell.getX()-firstCell.getX()+1];
+        for (int i = firstCell.getX(); i < secondCell.getY(); i++) {
+            for (int j = firstCell.getY(); j < secondCell.getY(); j++) {
+                Rangeval[i-firstCell.getX()][j-firstCell.getY()] = table[i][j];
+
+            }
+        }
+        return Rangeval; //TODO   מינימום מקסימום וכו' להוסיף פונקציות
+    }
+
+
     @Override
     public String eval(int x, int y) {
         Cell c = table[x][y];
         String line = c.getData();
-        if(c==null || c.getType()== Ex2Utils.TEXT ) {
+        if (c == null || c.getType() == Ex2Utils.TEXT) {
             data[x][y] = null;
             return line;
         }
         int type = c.getType();
-        if(type== Ex2Utils.NUMBER) {
+        if (type == Ex2Utils.NUMBER) {
             data[x][y] = getDouble(c.toString());
             return line;
         }
-        if (type == Ex2Utils.FORM | type == Ex2Utils.ERR_CYCLE_FORM || type== Ex2Utils.ERR_FORM_FORMAT) {
+        if (type == Ex2Utils.FORM | type == Ex2Utils.ERR_CYCLE_FORM || type == Ex2Utils.ERR_FORM_FORMAT) {
             line = line.substring(1); // removing the first "="
             if (isForm(line)) {
-                Double dd = computeForm(x,y);
+                Double dd = computeForm(x, y);
                 data[x][y] = dd;
-                if(dd==null) {
+                if (dd == null) {
                     c.setType(Ex2Utils.ERR_FORM_FORMAT);
+                } else {
+                    c.setType(Ex2Utils.FORM);
                 }
-                else {c.setType(Ex2Utils.FORM);}
+            } else {
+                data[x][y] = null;
+            }
         }
-        else {data[x][y] = null;}
+        if (type == Ex2Utils.IF || type == Ex2Utils.IF_ERR) {
+            //TODO לוודא שזה תא תקין ואז לראות איזה סוג הוא int, string  אפשר להחזיר מיד וform צריך לחשב
+            if (isvalidIf(line) == Ex2Utils.IF) {
+                String calc = computeIf(line);
+                table[x][y] = new SCell(line);
+                String dif = eval(x, y);
+                return dif;
+
+                // (x,y) -> scell contaion IF -> new cell <- correct cell based
+
+
+            }
         }
-        if (type== Ex2Utils.IF|| type == Ex2Utils.IF_ERR){
-            //TODO check this below
-//            if(isvalidIf(line)){
-//
-//            }
-        }
+
         String ans = null;
         if(data[x][y]!=null) {ans = data[x][y].toString();}
         return ans;
