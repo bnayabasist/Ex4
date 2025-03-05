@@ -29,6 +29,9 @@ public void setData(String s) {
         if(s.startsWith("=")) {
             type = Ex2Utils.FORM;
         }
+        if (s.startsWith("=if")){
+            type = Ex2Utils.IF;
+        }
         _line = s;
     }
 }

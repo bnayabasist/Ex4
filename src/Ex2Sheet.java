@@ -23,6 +23,7 @@ public class Ex2Sheet implements Sheet {
         this(Ex2Utils.WIDTH, Ex2Utils.HEIGHT);
     }
 
+// function to set single cell value.
     @Override
     public String value(int x, int y) {
         String ans = "";
@@ -37,6 +38,11 @@ public class Ex2Sheet implements Sheet {
         if(t== Ex2Utils.NUMBER || t== Ex2Utils.FORM) {
             ans = ""+data[x][y];
         }
+        ////TODO
+        if (t == Ex2Utils.IF){
+            ans = ""+data[x][y];
+        }
+        ////
         if(t== Ex2Utils.ERR_FORM_FORMAT) {ans = Ex2Utils.ERR_FORM;}
         return ans;
     }
@@ -137,7 +143,7 @@ public class Ex2Sheet implements Sheet {
         }
         return ans;
     }
-
+//   function that enables load previous/new sheets with cells data.
     @Override
     public void load(String fileName) throws IOException {
             Ex2Sheet sp = new Ex2Sheet();
@@ -165,7 +171,7 @@ public class Ex2Sheet implements Sheet {
             table = sp.table;
             data = sp.data;
     }
-
+//   function that enable save single sheet to file.
     @Override
     public void save(String fileName) throws IOException {
             FileWriter myWriter = new FileWriter(fileName);
@@ -192,9 +198,11 @@ public class Ex2Sheet implements Sheet {
         }
         return ans;
     }
+// function that gets string meaning range of cells and return the 2D Array of cells,
+// that can be computed to: Sum,Min,MAx,average.
+// for example: A1:C5
 
-    public Cell[][] Range2D (String RangeCell){
-        // A1:C5
+    public Double[][] Range2D (String RangeCell){
 
         if (RangeCell == null || !RangeCell.contains(":")){
             return null;
@@ -204,15 +212,72 @@ public class Ex2Sheet implements Sheet {
         String second = arr[1];
         CellEntry firstCell = new CellEntry(first);
         CellEntry secondCell = new CellEntry(second);
-        Cell[][] Rangeval = new SCell[secondCell.getY()-firstCell.getY()+1][secondCell.getX()-firstCell.getX()+1];
+        Double[][] Rangeval = new Double[secondCell.getY()-firstCell.getY()+1][secondCell.getX()-firstCell.getX()+1];
         for (int i = firstCell.getX(); i < secondCell.getY(); i++) {
             for (int j = firstCell.getY(); j < secondCell.getY(); j++) {
-                Rangeval[i-firstCell.getX()][j-firstCell.getY()] = table[i][j];
+                Rangeval[i-firstCell.getX()][j-firstCell.getY()] = data[i][j];
 
             }
         }
         return Rangeval; //TODO   מינימום מקסימום וכו' להוסיף פונקציות
     }
+//[[1,2,3],[4,5,6],[7,8,9]]
+    public Double Min (Double[][] MinCheck){
+        Double M = MinCheck[0][0];
+        for (int i = 0; i < MinCheck.length ; i++) {
+            for (int j = 0; j< MinCheck[i].length; j++) {
+                if(M == null&& MinCheck[i][j] != null){
+                    M = MinCheck[i][j];
+                }
+                if (MinCheck[i][j] != null && M!=null){
+                    M = Math.min(MinCheck[i][j],M);
+                }
+            }
+        }
+        return M;
+    }
+
+    public Double Max (Double[][] MaxCheck){
+        Double M = MaxCheck[0][0];
+        for (int i = 0; i < MaxCheck.length ; i++) {
+            for (int j = 0; j< MaxCheck[i].length; j++) {
+                if(M == null&& MaxCheck[i][j] != null){
+                    M = MaxCheck[i][j];
+                }
+                if (MaxCheck[i][j] != null && M!=null){
+                    M = Math.max(MaxCheck[i][j],M);
+                }
+            }
+        }
+        return M;
+
+    }
+    public Double Sum (Double[][] SumCheck){
+        Double S = 0.0;
+        for (int i = 0; i< SumCheck.length; i++){
+            for (int j =0; j <SumCheck[i].length; j++){
+                if (SumCheck[i][j] != null){
+                    S += SumCheck[i][j];
+
+                }
+            }
+        }
+        return S;
+    }
+
+    public Double Average (Double[][] AverCheck){
+        Double Cellsum = Sum(AverCheck);
+        int Matrixsize = AverCheck.length * AverCheck[0].length;
+        return Cellsum / Matrixsize;
+    }
+//
+
+//    public int OneCellValue (SCell SingleCell){
+//        //  פונקציה שמקבלת תא אחד בודד ומחזירה את הערך שלו
+//    }
+
+    //TODO 2 פונקציות 1. שמקבלת מערך דו מימדי מהריינג' 2 די ומחזירה את האינט מינמיום/מקסימום
+    // 2ץ פונקציה שמקבלת תא אחד בודד ומחזירה את הערך שלו
 
 
     @Override
@@ -228,7 +293,7 @@ public class Ex2Sheet implements Sheet {
             data[x][y] = getDouble(c.toString());
             return line;
         }
-        if (type == Ex2Utils.FORM | type == Ex2Utils.ERR_CYCLE_FORM || type == Ex2Utils.ERR_FORM_FORMAT) {
+        if (type == Ex2Utils.FORM || type == Ex2Utils.ERR_CYCLE_FORM || type == Ex2Utils.ERR_FORM_FORMAT) {
             line = line.substring(1); // removing the first "="
             if (isForm(line)) {
                 Double dd = computeForm(x, y);
@@ -242,17 +307,16 @@ public class Ex2Sheet implements Sheet {
                 data[x][y] = null;
             }
         }
+        type = isvalidIf(line);
         if (type == Ex2Utils.IF || type == Ex2Utils.IF_ERR) {
-            //TODO לוודא שזה תא תקין ואז לראות איזה סוג הוא int, string  אפשר להחזיר מיד וform צריך לחשב
+
             if (isvalidIf(line) == Ex2Utils.IF) {
                 String calc = computeIf(line);
-                table[x][y] = new SCell(line);
+                table[x][y] = new SCell(calc);
                 String dif = eval(x, y);
                 return dif;
 
                 // (x,y) -> scell contaion IF -> new cell <- correct cell based
-
-
             }
         }
 
@@ -262,7 +326,7 @@ public class Ex2Sheet implements Sheet {
     }
     public String computeIf(String line){
         line = removeSpaces(line);
-        line = line.substring(4,line.length()-2);
+        line = line.substring(4,line.length()-1);
         String[] arr = line.split(",");
         int i = opcont(arr[0]);
         String[] arr1 = arr[0].split(Ex2Utils.B_OPS[i]);
@@ -270,12 +334,13 @@ public class Ex2Sheet implements Sheet {
         SCell place2 = new SCell(arr[2]);
         String first = IsScell(place1);
         String second = IsScell(place2);
+        //TODO add in function IsScell the option to do min,max,sum,average
 
         double a = computeFormP(arr1[0]);
         double b = computeFormP(arr1[1]);
         if(i == 0){
             if(a<b){
-                return first;
+                return IsScell(place1);
             }
             return second;
         }
@@ -319,20 +384,21 @@ public class Ex2Sheet implements Sheet {
         if (S.charAt(3) != '(' || S.charAt(S.length()-1) != ')'){
             return Ex2Utils.IF_ERR;
         }
-        S = S.substring(4,S.length()-2);
+        S = S.substring(4,S.length()-1);
         String[] arr = S.split(",");
         if(arr.length!=3){
             return Ex2Utils.IF_ERR;
         }
         arr[0] = arr[0].replace(" ","");
         int i = opcont(arr[0]);
-        if (i ==-1){
+        if (i == -1){
             return Ex2Utils.IF_ERR;
         }
         String[] arr1 = arr[0].split(Ex2Utils.B_OPS[i]);
-        if(arr1.length!=2 || !isForm(arr1[0])|| !isForm(arr[1])){
+        if(arr1.length!=2 || !isForm(arr1[0])|| !isForm(arr1[1])){
             return Ex2Utils.IF_ERR;
         }
+
         SCell place1 = new SCell(arr[1]);
         SCell place2 = new SCell(arr[2]);
         String first = IsScell(place1);
@@ -341,7 +407,11 @@ public class Ex2Sheet implements Sheet {
             return Ex2Utils.IF_ERR;
         }
         return Ex2Utils.IF;
+
     }
+
+
+
 
     public String IsScell (SCell S){
 
