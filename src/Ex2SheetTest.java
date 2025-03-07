@@ -10,8 +10,6 @@ public class Ex2SheetTest {
         String check = "=if(1<2,50,100)";
         assertEquals("50.0", sheet.computeIf(check));
 
-
-
     }
     @Test
     public void testComputeIf_FalseCondition() {
