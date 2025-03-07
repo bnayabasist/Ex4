@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-/**
- * The documentation of this class was removed as of Ex4...
- */
+
+// Constructor to create a spreadsheet with given dimensions.
 public class Ex2Sheet implements Sheet {
     private Cell[][] table;
     private Double[][] data;
+
     public Ex2Sheet(int x, int y) {
         table = new SCell[x][y];
         for(int i=0;i<x;i=i+1) {
@@ -23,6 +23,13 @@ public class Ex2Sheet implements Sheet {
         this(Ex2Utils.WIDTH, Ex2Utils.HEIGHT);
     }
 
+    /**
+     * Returns the value of a cell at a given location.
+     *
+     * @param x X-coordinate of the cell.
+     * @param y Y-coordinate of the cell.
+     * @return Cell value as a string.
+     */
 // function to set single cell value.
     @Override
     public String value(int x, int y) {
@@ -38,20 +45,35 @@ public class Ex2Sheet implements Sheet {
         if(t== Ex2Utils.NUMBER || t== Ex2Utils.FORM) {
             ans = ""+data[x][y];
         }
-        ////TODO
+        ////
         if (t == Ex2Utils.IF){
             ans = ""+data[x][y];
+        }
+        if (t == Ex2Utils.IF_ERR){
+            ans = Ex2Utils.IF_FORM_ERR;
         }
         ////
         if(t== Ex2Utils.ERR_FORM_FORMAT) {ans = Ex2Utils.ERR_FORM;}
         return ans;
     }
 
+    /**
+     * Returns the cell object at a given location.
+     *
+     * @param x X-coordinate of the cell.
+     * @param y Y-coordinate of the cell.
+     * @return Cell object.
+     */
     @Override
     public Cell get(int x, int y) {
         return table[x][y];
     }
-
+    /**
+     * Returns the cell object at a given location using textual coordinates (e.g., "A1").
+     *
+     * @param cords Cell coordinates as a string.
+     * @return Cell object.
+     */
     @Override
     public Cell get(String cords) {
         Cell ans = null;
@@ -69,6 +91,7 @@ public class Ex2Sheet implements Sheet {
     public int height() {
         return table[0].length;
     }
+    //Sets the value of a cell at a given location.
     @Override
     public void set(int x, int y, String s) {
         Cell c = new SCell(s);
@@ -77,7 +100,9 @@ public class Ex2Sheet implements Sheet {
     }
 
     ///////////////////////////////////////////////////////////
-
+    /**
+     * Evaluates all formulas in the spreadsheet.
+     */
     @Override
     public void eval() {
         int[][] dd = depth();
@@ -101,14 +126,18 @@ public class Ex2Sheet implements Sheet {
             }
         }
     }
-
+//Checks if given coordinates are within the spreadsheet.
     @Override
     public boolean isIn(int xx, int yy) {
         boolean ans = true;
         if(xx<0 |yy<0 | xx>=width() | yy>=height()) {ans = false;}
         return ans;
     }
-
+    /**
+     * Computes the dependency depth of each cell in the spreadsheet.
+     *
+     * @return A 2D matrix representing the dependency depth of each cell.
+     */
     @Override
     public int[][] depth() {
         int[][] ans = new int[width()][height()];
@@ -221,7 +250,7 @@ public class Ex2Sheet implements Sheet {
         }
         return Rangeval; //TODO   מינימום מקסימום וכו' להוסיף פונקציות
     }
-//[[1,2,3],[4,5,6],[7,8,9]]
+    //Computes the minimum value in a 2D array of values.
     public Double Min (Double[][] MinCheck){
         Double M = MinCheck[0][0];
         for (int i = 0; i < MinCheck.length ; i++) {
@@ -236,7 +265,7 @@ public class Ex2Sheet implements Sheet {
         }
         return M;
     }
-
+    //Computes the maximum value in a 2D array of values.
     public Double Max (Double[][] MaxCheck){
         Double M = MaxCheck[0][0];
         for (int i = 0; i < MaxCheck.length ; i++) {
@@ -252,6 +281,7 @@ public class Ex2Sheet implements Sheet {
         return M;
 
     }
+    //Computes the sum of values in a 2D array of values.
     public Double Sum (Double[][] SumCheck){
         Double S = 0.0;
         for (int i = 0; i< SumCheck.length; i++){
@@ -264,7 +294,7 @@ public class Ex2Sheet implements Sheet {
         }
         return S;
     }
-
+    //Computes the average of values in a 2D array of values.
     public Double Average (Double[][] AverCheck){
         Double Cellsum = Sum(AverCheck);
         int Matrixsize = AverCheck.length * AverCheck[0].length;
@@ -279,7 +309,7 @@ public class Ex2Sheet implements Sheet {
     //TODO 2 פונקציות 1. שמקבלת מערך דו מימדי מהריינג' 2 די ומחזירה את האינט מינמיום/מקסימום
     // 2ץ פונקציה שמקבלת תא אחד בודד ומחזירה את הערך שלו
 
-
+    //Evaluates a formula at a given cell.
     @Override
     public String eval(int x, int y) {
         Cell c = table[x][y];
@@ -324,6 +354,8 @@ public class Ex2Sheet implements Sheet {
         if(data[x][y]!=null) {ans = data[x][y].toString();}
         return ans;
     }
+
+    //Computes the value of an IF condition in a given string.
     public String computeIf(String line){
         line = removeSpaces(line);
         line = line.substring(4,line.length()-1);
@@ -376,14 +408,24 @@ public class Ex2Sheet implements Sheet {
         }
         return null;
     }
+
+    // this function checks if the "if" condition is in valid form.
     public int isvalidIf(String S){
 
         if (S.charAt(0) != '=' || S.charAt(1) != 'i' || S.charAt(2) != 'f'){
             return Ex2Utils.IF_ERR;
         }
+        String M = S.substring(1);
+        if (M.contains("=")){
+            return Ex2Utils.IF_ERR;
+
+        }
         if (S.charAt(3) != '(' || S.charAt(S.length()-1) != ')'){
             return Ex2Utils.IF_ERR;
         }
+        // after the string implements "if" condition, checking the condition by splitting the string to 3 arr cells
+        // and checking inferring to cell location if the cell is in valid form
+        // for example: “=if(1<2,50,100)” arr[1]= 1<2, arr[2]= 50, arr[3]= 100.
         S = S.substring(4,S.length()-1);
         String[] arr = S.split(",");
         if(arr.length!=3){
@@ -394,6 +436,7 @@ public class Ex2Sheet implements Sheet {
         if (i == -1){
             return Ex2Utils.IF_ERR;
         }
+        // splitting arr[0] to 2 cells array, and checking if one of operators splitting them, and in the right form and location.
         String[] arr1 = arr[0].split(Ex2Utils.B_OPS[i]);
         if(arr1.length!=2 || !isForm(arr1[0])|| !isForm(arr1[1])){
             return Ex2Utils.IF_ERR;
@@ -412,7 +455,7 @@ public class Ex2Sheet implements Sheet {
 
 
 
-
+    // this function checks if a single cell is valid and contains one of the following forms: Number,String,Formula
     public String IsScell (SCell S){
 
         String line = S.getData();
@@ -425,7 +468,8 @@ public class Ex2Sheet implements Sheet {
             return Double.toString(num);
         }
         String ans = null;
-        if (type == Ex2Utils.FORM | type == Ex2Utils.ERR_CYCLE_FORM || type== Ex2Utils.ERR_FORM_FORMAT) {
+//        if (type == Ex2Utils.FORM || type == Ex2Utils.ERR_CYCLE_FORM || type== Ex2Utils.ERR_FORM_FORMAT) {
+            if (type == Ex2Utils.FORM) {
             line = line.substring(1); // removing the first "="
             if (isForm(line)) {
                 line = removeSpaces(line);
@@ -441,7 +485,7 @@ public class Ex2Sheet implements Sheet {
     }
 
 
-
+    // side function tho check if String contains one of operators(can be switched by checking in Bops location)
     public int opcont(String j){
 
         for (int i=0; i< j.length(); i++){
@@ -472,7 +516,7 @@ public class Ex2Sheet implements Sheet {
 
 
 
-        /////////////////////////////////////////////////
+        //Converts a string to an Integer, returning null if conversion fails.
     public static Integer getInteger(String line) {
         Integer ans = null;
         try {
@@ -481,6 +525,7 @@ public class Ex2Sheet implements Sheet {
         catch (Exception e) {;}
         return ans;
     }
+    //Converts a string to a Double, returning null if conversion fails.
     public static Double getDouble(String line) {
         Double ans = null;
         try {
@@ -489,6 +534,7 @@ public class Ex2Sheet implements Sheet {
         catch (Exception e) {;}
         return ans;
     }
+    //Removes all spaces from a string.
     public static String removeSpaces(String s) {
         String ans = null;
         if (s!=null) {
@@ -500,7 +546,7 @@ public class Ex2Sheet implements Sheet {
         }
         return ans;
     }
-
+    //Checks the type of a string: TEXT, NUMBER, or FORM.
     public int checkType(String line) {
         line = removeSpaces(line);
         int ans = Ex2Utils.TEXT;
@@ -516,6 +562,7 @@ public class Ex2Sheet implements Sheet {
         }
         return ans;
     }
+    //Checks if a string represents a valid formula.
     public boolean isForm(String form) {
         boolean ans = false;
         if(form!=null) {
@@ -527,6 +574,7 @@ public class Ex2Sheet implements Sheet {
         }
         return ans;
     }
+    //Computes the value of a formula at a given cell.
     private Double computeForm(int x, int y) {
         Double ans = null;
         String form = table[x][y].getData();
@@ -537,6 +585,7 @@ public class Ex2Sheet implements Sheet {
         }
         return ans;
     }
+    //Checks if a string represents a valid formula recursively.
     private boolean isFormP(String form) {
         boolean ans = false;
         while(canRemoveB(form)) {
@@ -563,6 +612,7 @@ public class Ex2Sheet implements Sheet {
         }
         return ans;
     }
+    //Extracts all cell references from a string.
     public static ArrayList<Index2D> allCells(String line) {
         ArrayList<Index2D> ans = new ArrayList<Index2D>();
         int i=0;
@@ -583,7 +633,7 @@ public class Ex2Sheet implements Sheet {
         }
         return ans;
     }
-
+    //Computes the value of a formula string recursively.
     private Double computeFormP(String form) {
         Double ans = null;
         while(canRemoveB(form)) {
@@ -630,6 +680,7 @@ public class Ex2Sheet implements Sheet {
         }
         return ans;
     }
+    //Returns the operator code of a given operator string.
     private static int opCode(String op){
         int ans =-1;
         for(int i = 0; i< Ex2Utils.M_OPS.length; i=i+1) {
@@ -651,6 +702,7 @@ public class Ex2Sheet implements Sheet {
         }
         return ans;
     }
+    //Finds the index of the last operator in a formula string.
     public static int findLastOp(String form) {
         int ans = -1;
         double s1=0,min=-1;
@@ -667,12 +719,14 @@ public class Ex2Sheet implements Sheet {
         }
         return ans;
     }
+    // Removes outer parentheses from a string if possible.
     private static String removeB(String s) {
         if (canRemoveB(s)) {
             s = s.substring(1, s.length() - 1);
         }
         return s;
     }
+    //Checks if outer parentheses can be removed from a string.
     private static boolean canRemoveB(String s) {
         boolean ans = false;
         if (s!=null && s.startsWith("(") && s.endsWith(")")) {
@@ -693,6 +747,7 @@ public class Ex2Sheet implements Sheet {
         }
         return ans;
     }
+    //Checks if a substring at a given start index matches any of the given words.
     private static int op(String line, String[] words, int start) {
         int ans = -1;
         line = line.substring(start);
@@ -703,7 +758,7 @@ public class Ex2Sheet implements Sheet {
         }
         return ans;
     }
-
+    //Checks if a string represents a number.
     public static boolean isNumber(String line) {
         boolean ans = false;
         try {
