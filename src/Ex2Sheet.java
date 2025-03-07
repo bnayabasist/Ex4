@@ -412,7 +412,6 @@ public class Ex2Sheet implements Sheet {
     // this function checks if the "if" condition is in valid form.
     public int isvalidIf(String S){
 
-
         if (S.charAt(0) != '=' || S.charAt(1) != 'i' || S.charAt(2) != 'f'){
             return Ex2Utils.IF_ERR;
         }
