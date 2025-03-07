@@ -350,6 +350,7 @@ public class Ex2Sheet implements Sheet {
             }
         }
 
+
         String ans = null;
         if(data[x][y]!=null) {ans = data[x][y].toString();}
         return ans;
