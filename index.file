@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>צפייה ישירה</title>
+</head>
+<body>
+    <h2>סרטון לצפייה ישירה</h2>
+    <video width="640" height="360" controls>
+        <source src="video.mp4" type="video/mp4">
+        הדפדפן שלך אינו תומך בניגון וידאו.
+    </video>
+</body>
+</html>
