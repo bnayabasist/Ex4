@@ -49,6 +49,9 @@ public class Ex2Sheet implements Sheet {
         if (t == Ex2Utils.IF){
             ans = ""+data[x][y];
         }
+        if (t == Ex2Utils.Function){
+            ans = ""+data[x][y];
+        }
         if (t == Ex2Utils.IF_ERR){
             ans = Ex2Utils.IF_FORM_ERR;
         }
@@ -250,8 +253,12 @@ public class Ex2Sheet implements Sheet {
         }
         return Rangeval; //TODO   מינימום מקסימום וכו' להוסיף פונקציות
     }
+
     //Computes the minimum value in a 2D array of values.
     public Double Min (Double[][] MinCheck){
+        if ( MinCheck == null || MinCheck.length == 0) {
+            return null;
+        }
         Double M = MinCheck[0][0];
         for (int i = 0; i < MinCheck.length ; i++) {
             for (int j = 0; j< MinCheck[i].length; j++) {
@@ -300,7 +307,30 @@ public class Ex2Sheet implements Sheet {
         int Matrixsize = AverCheck.length * AverCheck[0].length;
         return Cellsum / Matrixsize;
     }
-//
+
+    public String FuncType (String function){
+        if (function == null || !function.startsWith("=")) {
+            return Ex2Utils.func_ERR;
+        }
+        if (!function.contains("min") || !function.contains("max") || function.contains("sum")|| function.contains("average")){
+            return Ex2Utils.func_ERR;
+        }
+
+        if (function.charAt(4) != '(' || function.charAt(function.length()-1) != ')'){
+            return Ex2Utils.func_ERR;
+        }
+
+        function = function.substring(1).toLowerCase();
+        for (int j = 0; j < Ex2Utils.FUNCTIONS.length; j++){
+            if (function.startsWith(Ex2Utils.FUNCTIONS[j].toLowerCase())){
+                return Ex2Utils.FUNCTIONS[j];
+                    }
+             }
+            return Ex2Utils.func_ERR;
+
+
+    }
+
 
 //    public int OneCellValue (SCell SingleCell){
 //        //  פונקציה שמקבלת תא אחד בודד ומחזירה את הערך שלו
@@ -350,6 +380,46 @@ public class Ex2Sheet implements Sheet {
             }
         }
 
+            if (type == Ex2Utils.Function || type == Ex2Utils.FUNC_ERR) {
+            String func = FuncType(line);
+            if (func.equals(Ex2Utils.FUNCTIONS[1])) {
+                //*
+                String range = line.substring(5, line.length() - 2);
+                Double[][] MinRange = Range2D(range);
+                Double MM = Min(MinRange);
+                String ResMin = Double.toString(MM);
+                table[x][y] = new SCell(ResMin);
+                String res = eval(x, y);
+                return res;
+            }
+        }
+//        if (type == 2){
+//            String range = line.substring(6,line.length()-1);
+//            Double [][] MaxRange = Range2D(range);
+//            Double MM = Max(MaxRange);
+//            String ResMax = Double.toString(MM);
+//            table[x][y] = new SCell(range);
+//            String res = eval(x, y);
+//            return res;
+//        }
+//        if (type == 3){
+//            String range = line.substring(6,line.length()-1);
+//            Double [][] SumRange = Range2D(range);
+//            Double MM = Sum(SumRange);
+//            String ResSum = Double.toString(MM);
+//            table[x][y] = new SCell(range);
+//            String res = eval(x, y);
+//            return res;
+//        }
+//        if (type == 4){
+//            String range = line.substring(6,line.length()-1);
+//            Double [][] AverRange = Range2D(range);
+//            Double MM = Average(AverRange);
+//            String ResAver = Double.toString(MM);
+//            table[x][y] = new SCell(range);
+//            String res = eval(x, y);
+//            return res;
+//        }
 
         String ans = null;
         if(data[x][y]!=null) {ans = data[x][y].toString();}
@@ -464,11 +534,14 @@ public class Ex2Sheet implements Sheet {
             return line;
         }
         int type = S.getType();
-        if(type== Ex2Utils.NUMBER) {
+        if(type == Ex2Utils.NUMBER) {
             double num = getDouble(S.toString());
             return Double.toString(num);
         }
         String ans = null;
+        if (type == Ex2Utils.Function){
+
+        }
 //        if (type == Ex2Utils.FORM || type == Ex2Utils.ERR_CYCLE_FORM || type== Ex2Utils.ERR_FORM_FORMAT) {
             if (type == Ex2Utils.FORM) {
             line = line.substring(1); // removing the first "="
@@ -482,6 +555,19 @@ public class Ex2Sheet implements Sheet {
                 ans = Double.toString(dd);}
             }
         }
+
+//            if (type == Ex2Utils.IF){
+//                if (isvalidIf(line) == Ex2Utils.IF) {
+//                    String dd = computeIf(line);
+//                }
+//                if (isvalidIf(line) == Ex2Utils.IF_ERR){
+//                    S.setType(Ex2Utils.IF_ERR);
+//                }
+//                if (isvalidIf(line) == Ex2Utils.IF){
+//                    S.setType(Ex2Utils.IF);
+//                }
+//                if
+//            }
         return ans;
     }
 

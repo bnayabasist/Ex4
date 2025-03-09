@@ -1,5 +1,8 @@
 import org.junit.Test;
 
+import java.util.Arrays;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Ex2SheetTest {
@@ -37,5 +40,19 @@ public class Ex2SheetTest {
         assertEquals(Ex2Utils.IF_ERR, sheet.isvalidIf("=if(1<2,50)")); // Missing third argument
         assertEquals(Ex2Utils.IF_ERR, sheet.isvalidIf("=if(1<2,50,100")); // Missing closing parenthesis
 
+    }
+
+    @Test
+    public void range2D() {
+        String range = "A1:B8";
+        Ex2Sheet sheet = new Ex2Sheet();
+        sheet.Range2D(range);
+        System.out.println(Arrays.deepToString(sheet.Range2D(range)));
+
+
+    }
+
+    @Test
+    public void min() {
     }
 }

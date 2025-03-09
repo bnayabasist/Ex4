@@ -20,7 +20,8 @@ public class SCell implements Cell {
     }
     //Sets the data of the cell and determines its type.
     @Override
-public void setData(String s) {
+    public void setData(String s) {
+
     if(s!=null) {
         type = Ex2Utils.TEXT;
         if (isNumber(s)) {
@@ -31,6 +32,18 @@ public void setData(String s) {
         }
         if (s.startsWith("=if")){
             type = Ex2Utils.IF;
+        }
+        if (s.startsWith("=min")){
+            type = Ex2Utils.Function;
+        }
+        if (s.startsWith("=max")){
+            type = Ex2Utils.Function;
+        }
+        if (s.startsWith("=sum")){
+            type = Ex2Utils.Function;
+        }
+        if (s.startsWith("=average")){
+            type = Ex2Utils.Function;
         }
         _line = s;
     }
