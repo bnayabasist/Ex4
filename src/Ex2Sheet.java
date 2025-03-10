@@ -312,7 +312,7 @@ public class Ex2Sheet implements Sheet {
         if (function == null || !function.startsWith("=")) {
             return Ex2Utils.func_ERR;
         }
-        if (!function.contains("min") || !function.contains("max") || function.contains("sum")|| function.contains("average")){
+        if (!function.contains("min") && !function.contains("max") && function.contains("sum") && function.contains("average")){
             return Ex2Utils.func_ERR;
         }
 
@@ -384,7 +384,7 @@ public class Ex2Sheet implements Sheet {
             String func = FuncType(line);
             if (func.equals(Ex2Utils.FUNCTIONS[1])) {
                 //*
-                String range = line.substring(5, line.length() - 2);
+                String range = line.substring(5, line.length() - 1);
                 Double[][] MinRange = Range2D(range);
                 Double MM = Min(MinRange);
                 String ResMin = Double.toString(MM);
