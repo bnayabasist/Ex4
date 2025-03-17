@@ -244,11 +244,20 @@ public class Ex2Sheet implements Sheet {
         String second = arr[1];
         CellEntry firstCell = new CellEntry(first);
         CellEntry secondCell = new CellEntry(second);
-        Double[][] Rangeval = new Double[secondCell.getY()-firstCell.getY()+1][secondCell.getX()-firstCell.getX()+1];
-        for (int i = firstCell.getX(); i < secondCell.getY(); i++) {
-            for (int j = firstCell.getY(); j < secondCell.getY(); j++) {
-                Rangeval[i-firstCell.getX()][j-firstCell.getY()] = data[i][j];
-
+        int col = secondCell.getX() - firstCell.getX()+1;
+        int row = secondCell.getY() - firstCell.getY()+1;
+        if (col == 0) {
+            col =1;
+        }
+        if (row == 0){
+            row = 1;
+        }
+        Double[][] Rangeval = new Double[row][col];
+        for (int i = firstCell.getX(); i <= secondCell.getX(); i++) {
+            for (int j = firstCell.getY(); j <= secondCell.getY(); j++) {
+                int r = j-firstCell.getY();
+                int c = i-firstCell.getX();
+                Rangeval[r][c] = data[i][j];
             }
         }
         return Rangeval; //TODO   מינימום מקסימום וכו' להוסיף פונקציות
@@ -367,7 +376,7 @@ public class Ex2Sheet implements Sheet {
                 data[x][y] = null;
             }
         }
-        type = isvalidIf(line);
+//         type = isvalidIf(line);
         if (type == Ex2Utils.IF || type == Ex2Utils.IF_ERR) {
 
             if (isvalidIf(line) == Ex2Utils.IF) {
@@ -381,45 +390,48 @@ public class Ex2Sheet implements Sheet {
         }
 
             if (type == Ex2Utils.Function || type == Ex2Utils.FUNC_ERR) {
-            String func = FuncType(line);
-            if (func.equals(Ex2Utils.FUNCTIONS[1])) {
-                //*
-                String range = line.substring(5, line.length() - 1);
-                Double[][] MinRange = Range2D(range);
-                Double MM = Min(MinRange);
-                String ResMin = Double.toString(MM);
-                table[x][y] = new SCell(ResMin);
-                String res = eval(x, y);
-                return res;
+                String func = FuncType(line);
+                if (func.equals(Ex2Utils.FUNCTIONS[1])) {
+                    //*
+                    String range = line.substring(5, line.length() - 1);
+                    Double[][] MinRange = Range2D(range);
+                    Double MM = Min(MinRange);
+                    String ResMin = Double.toString(MM);
+                    table[x][y] = new SCell(ResMin);
+                    String res = eval(x, y);
+                    return res;
+                }
+
+                if (func.equals(Ex2Utils.FUNCTIONS[2])) {
+
+                        String range = line.substring(5, line.length() - 1);
+                        Double[][] MaxRange = Range2D(range);
+                        Double MM = Max(MaxRange);
+                        String ResMax = Double.toString(MM);
+                        table[x][y] = new SCell(ResMax);
+                        String result = eval(x, y);
+                        return result;
+                    }
+
+                    String range = line.substring(5, line.length() - 1);
+                    if (func.equals(Ex2Utils.FUNCTIONS[3]) ) {
+                    Double [][] SumRange = Range2D(range);
+                    Double MM = Sum(SumRange);
+                    String ResSum = Double.toString(MM);
+                    table[x][y] = new SCell(ResSum);
+                    String res = eval(x, y);
+                    return res;
+                }
+
+             String Arange = line.substring(5,line.length()-1);
+            Double [][] AverRange = Range2D(Arange);
+            Double MM = Average(AverRange);
+            String ResAver = Double.toString(MM);
+            table[x][y] = new SCell(ResAver);
+            String res = eval(x, y);
+            return res;
+
             }
-        }
-//        if (type == 2){
-//            String range = line.substring(6,line.length()-1);
-//            Double [][] MaxRange = Range2D(range);
-//            Double MM = Max(MaxRange);
-//            String ResMax = Double.toString(MM);
-//            table[x][y] = new SCell(range);
-//            String res = eval(x, y);
-//            return res;
-//        }
-//        if (type == 3){
-//            String range = line.substring(6,line.length()-1);
-//            Double [][] SumRange = Range2D(range);
-//            Double MM = Sum(SumRange);
-//            String ResSum = Double.toString(MM);
-//            table[x][y] = new SCell(range);
-//            String res = eval(x, y);
-//            return res;
-//        }
-//        if (type == 4){
-//            String range = line.substring(6,line.length()-1);
-//            Double [][] AverRange = Range2D(range);
-//            Double MM = Average(AverRange);
-//            String ResAver = Double.toString(MM);
-//            table[x][y] = new SCell(range);
-//            String res = eval(x, y);
-//            return res;
-//        }
 
         String ans = null;
         if(data[x][y]!=null) {ans = data[x][y].toString();}
